@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./sbom-compass.db"
+}
+
+model Scan {
+  id            String   @id @default(uuid())
+  projectPath   String
+  status        String   @default("pending")
+  totalDeps     Int      @default(0)
+  criticalCount Int      @default(0)
+  highCount     Int      @default(0)
+  mediumCount   Int      @default(0)
+  lowCount      Int      @default(0)
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+
+  dependencies  Dependency[]
+  vulnerabilities Vulnerability[]
+}
+
+model Dependency {
+  id        String @id @default(uuid())
+  scanId    String
+  name      String
+  version   String
+  ecosystem String
+  type      String @default("direct")
+
+  scan          Scan           @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  vulnerabilities Vulnerability[]
+}
+
+model Vulnerability {
+  id              String   @id @default(uuid())
+  scanId          String
+  dependencyId    String
+  osvId           String
+  severity        String
+  cvssScore       Float?
+  summary         String
+  details         String   @default("")
+  fixedVersion    String?
+  affectedVersions String  @default("")
+  aliases         String   @default("")
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+
+  scan       Scan       @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  dependency Dependency @relation(fields: [dependencyId], references: [id], onDelete: Cascade)
+  remediation Remediation?
+}
+
+model Remediation {
+  id              String   @id @default(uuid())
+  vulnerabilityId String   @unique
+  status          String   @default("open")
+  owner           String?
+  dueDate         DateTime?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  vulnerability Vulnerability @relation(fields: [vulnerabilityId], references: [id], onDelete: Cascade)
+}

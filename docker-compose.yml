@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "42001:42001"
+    volumes:
+      - ./backend/prisma:/app/backend/prisma
+      - ${HOST_PROJECT_PATH:-.}:/host-project:ro
+    environment:
+      - PORT=42001
+      - DATABASE_URL=file:./backend/prisma/sbom-compass.db
+      - NODE_ENV=production
+    restart: unless-stopped
