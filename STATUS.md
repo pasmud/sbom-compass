@@ -13,4 +13,6 @@
 - [x] Tests passing (12/12 tests)
 - [x] Docker working (Dockerfile + docker-compose.yml)
 - [x] Documentation complete (README.md)
+- [x] License, Security, Contributing docs added
+- [x] GitHub Actions CI configured
 - [x] GitHub repo pushed (pasmud/sbom-compass)
